@@ -1,0 +1,9 @@
+# project
+data/secrets.json
+tests/
+
+# python
+__pycache__/
+
+# virtual
+venv/
