@@ -78,7 +78,7 @@ def schedule_tasks(trading_session):
     schedule.every().day.at('09:30', ny_timezone).do(task_09_30_ny)
 
     # Schedule task at 10:00 PM New York time
-    schedule.every().day.at('14:58', ny_timezone).do(task_16_00_ny)
+    schedule.every().day.at('16:00', ny_timezone).do(task_16_00_ny)
 
     logging.info('Tasks are scheduled. Waiting for the action......')
 
