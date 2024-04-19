@@ -51,10 +51,15 @@ def task_16_00_ny():
             positions = account.get_positions(tasty_session, instrument_type=order.InstrumentType.EQUITY)
             position_symbols = [position.symbol for position in positions]
 
+            net_liq_value = account.get_balances(tasty_session).net_liquidating_value
+
             with open(file_ops.symbols_open_positions_path, 'w') as file:
                 # Write data
                 for symbol in position_symbols:
                     file.write(f'{symbol}\n')
+
+            with open(file_ops.account_balances_path, 'w') as file:
+                file.write(f'NetLiquidatingValue,{net_liq_value}\n')    
 
             financials.process_symbols('open_positions')
         except Exception as e:
@@ -73,7 +78,7 @@ def schedule_tasks(trading_session):
     schedule.every().day.at('09:30', ny_timezone).do(task_09_30_ny)
 
     # Schedule task at 10:00 PM New York time
-    schedule.every().day.at('16:00', ny_timezone).do(task_16_00_ny)
+    schedule.every().day.at('14:58', ny_timezone).do(task_16_00_ny)
 
     logging.info('Tasks are scheduled. Waiting for the action......')
 
