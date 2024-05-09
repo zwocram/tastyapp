@@ -57,16 +57,16 @@ def process_symbols(symbol_type):
     symbols_df_sorted = symbols_df.sort_values(by='atr_close_ratio', ascending=False)
     symbols_df_sorted.insert(1, 'status', 'TBO')
 
-    print(symbols_df)
+    return symbols_df_sorted
 
-    symbols_df_sorted.to_csv(file_ops.symbols_sys_output_path, index=False, sep='\t')
+    '''
     if symbol_type == 'candidates':
         symbols_df_sorted.to_csv(file_ops.symbols_sys_output_path, index=False, sep='\t')
     elif symbol_type == 'open_positions':
         symbols_df_sorted.to_csv(file_ops.symbols_open_positions_out_path, index=False, sep='\t')
 
     symbols_file.close()
-    
+    '''
 
 if __name__ == "__main__":  
     # Main parser

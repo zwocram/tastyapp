@@ -7,12 +7,15 @@ import pytz
 from datetime import datetime
 import schedule
 import time
+import pandas as pd
 from pandas_market_calendars import get_calendar
 from tastytrade import Account, order
 from tastytrade.order import NewOrder
 import file_ops
 
 tasty_session = None # for use in other methods in this module
+
+RSI_UPPER_LIMIT = 80
 
 # Define the timezone for New York
 ny_timezone = pytz.timezone('America/New_York')
@@ -37,7 +40,12 @@ def task_09_30_ny():
     
     if _is_trading_day():
         # get net liquidity value
-        logging.info('Markets open, dingdingding....')
+        with open(file_ops.symbols_tbc, 'r') as file:
+            tickers = [line.strip() for line in file]
+
+        for ticker in tickers:
+            logging.info("processing {0}", ticker)
+
     else:
         logging.info('Markets closed today.')
 
@@ -61,10 +69,17 @@ def task_16_00_ny():
             with open(file_ops.account_balances_path, 'w') as file:
                 file.write(f'NetLiquidatingValue,{net_liq_value}\n')    
 
-            financials.process_symbols('open_positions')
+            # get market data for open positions
+            symbols_market_data = financials.process_symbols('open_positions')
+            symbols_market_data.to_csv(file_ops.symbols_open_positions_out_path, index=False, sep='\t')
+            
+            # check if any open positions have rsi_3 > 80
+            stocks_rsi_gt = symbols_market_data[symbols_market_data['rsi_3'] > RSI_UPPER_LIMIT]
+            if not stocks_rsi_gt.empty:
+                pd.DataFrame(stocks_rsi_gt, columns=['symbol']).to_csv(file_ops.symbols_tbc, index=False, header=False)
+
         except Exception as e:
             raise
-        logging.info('Do something after markets close.')
     else:
         logging.info('Markets closed today.')
 
@@ -78,7 +93,7 @@ def schedule_tasks(trading_session):
     schedule.every().day.at('09:30', ny_timezone).do(task_09_30_ny)
 
     # Schedule task at 10:00 PM New York time
-    schedule.every().day.at('16:00', ny_timezone).do(task_16_00_ny)
+    schedule.every().day.at('15:08', ny_timezone).do(task_16_00_ny)
 
     logging.info('Tasks are scheduled. Waiting for the action......')
 
