@@ -88,11 +88,7 @@ def task_16_00_ny():
             stocks_rsi_gt = symbols_market_data[symbols_market_data['rsi_3'] > RSI_UPPER_LIMIT]
             if not stocks_rsi_gt.empty:
                 pd.DataFrame(stocks_rsi_gt, columns=['symbol']).to_csv(file_ops.symbols_tbc, index=False, header=False)
-                repo = git.Repo()
-                repo.index.add(file_ops.symbols_tbc)
-                repo.index.commit('Positions to be closed')
-                origin = repo.remote(github_repo)
-                origin.push()
+                gits.push_file(file_ops.symbols_tbc, "Stocks that can be closed tomorrow.")
 
         except Exception as e:
             raise
