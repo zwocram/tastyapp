@@ -42,7 +42,9 @@ def _is_trading_day():
 # Define the functions to be executed at specific times
 def task_09_30_ny():
     logging.info('It\'s 9.30 in NY, check if there something to do in the markets today....')
-    
+
+    # downloading file symbols_tbc.csv
+
 
 
     if _is_trading_day():
@@ -102,7 +104,7 @@ def schedule_tasks(trading_session):
     tasty_session = trading_session
 
     # Schedule task at 9:30 AM New York time
-    schedule.every().day.at('08:28', ny_timezone).do(task_09_30_ny)
+    schedule.every().day.at('09:30', ny_timezone).do(task_09_30_ny)
 
     # Schedule task at 10:00 PM New York time
     schedule.every().day.at('16:00', ny_timezone).do(task_16_00_ny)
