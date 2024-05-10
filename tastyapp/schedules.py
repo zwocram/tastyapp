@@ -44,8 +44,7 @@ def task_09_30_ny():
     logging.info('It\'s 9.30 in NY, check if there something to do in the markets today....')
 
     # downloading file symbols_tbc.csv
-
-
+    gits.force_pull_file(file_ops.symbols_tbc)
 
     if _is_trading_day():
         # get net liquidity value
