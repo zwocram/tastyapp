@@ -1,9 +1,11 @@
 import pdb
+import git
 import logging
 import financials
 import signal
 from decimal import Decimal
 import pytz
+import secretdata
 from datetime import datetime
 import schedule
 import time
@@ -73,10 +75,19 @@ def task_16_00_ny():
             symbols_market_data = financials.process_symbols('open_positions')
             symbols_market_data.to_csv(file_ops.symbols_open_positions_out_path, index=False, sep='\t')
             
+            # open secrets file for github data
+            secrets = secretdata.read_secrets()
+            github_repo = secrets.get("github_repo")
+            
             # check if any open positions have rsi_3 > 80
             stocks_rsi_gt = symbols_market_data[symbols_market_data['rsi_3'] > RSI_UPPER_LIMIT]
             if not stocks_rsi_gt.empty:
                 pd.DataFrame(stocks_rsi_gt, columns=['symbol']).to_csv(file_ops.symbols_tbc, index=False, header=False)
+                repo = git.Repo()
+                repo.index.add(file_ops.symbols_tbc)
+                repo.index.commit('Positions to be closed')
+                origin = repo.remote(github_repo)
+                origin.push()
 
         except Exception as e:
             raise
@@ -93,7 +104,7 @@ def schedule_tasks(trading_session):
     schedule.every().day.at('09:30', ny_timezone).do(task_09_30_ny)
 
     # Schedule task at 10:00 PM New York time
-    schedule.every().day.at('15:08', ny_timezone).do(task_16_00_ny)
+    schedule.every().day.at('16:00', ny_timezone).do(task_16_00_ny)
 
     logging.info('Tasks are scheduled. Waiting for the action......')
 
