@@ -1,3 +1,4 @@
+import datetime
 import pdb
 import git
 import gits
@@ -31,8 +32,6 @@ def _is_trading_day():
     # Get the current time in New York timezone
     current_time = datetime.now(ny_timezone)
     
-    gits.force_pull_file(file_ops.symbols_tbc)
-
     # Check if it's a trading day on the NYSE  
     if nyse_calendar.valid_days(start_date=current_time.date(), end_date=current_time.date()).size > 0:
         trading_day = True
@@ -52,7 +51,7 @@ def task_09_30_ny():
             tickers = [line.strip() for line in file]
 
         for ticker in tickers:
-            logging.info("processing {0}", ticker)
+            print(ticker)
 
     else:
         logging.info('Markets closed today.')
@@ -103,7 +102,7 @@ def schedule_tasks(trading_session):
     tasty_session = trading_session
 
     # Schedule task at 9:30 AM New York time
-    schedule.every().day.at('09:30', ny_timezone).do(task_09_30_ny)
+    schedule.every().day.at('10:41', ny_timezone).do(task_09_30_ny)
 
     # Schedule task at 10:00 PM New York time
     schedule.every().day.at('16:00', ny_timezone).do(task_16_00_ny)
