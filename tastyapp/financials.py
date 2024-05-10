@@ -1,5 +1,6 @@
 import argparse
 import os
+import gits
 import yfinance as yf
 import pandas_ta as ta
 import pandas as pd
@@ -40,14 +41,14 @@ def get_stock_data(symbol):
         print(f"Failed to get data for ticker '{symbol}' reason: {e}")
         return None
 
-def process_symbols(symbol_type):
+def process_symbols(symbol_type=None):
 
     file_path = None
-    if symbol_type == 'candidates':
-        file_path = file_ops.symbols_candidates_path
-    elif symbol_type == 'open_positions':
+    if symbol_type == 'open_positions':
         file_path = file_ops.symbols_open_positions_path
         file_path_out = file_ops.symbols_open_positions_out_path
+    else:
+        file_path = file_ops.symbols_candidates_path
 
     with open(file_path, 'r') as symbols_file:
         symbols = symbols_file.read().splitlines()
@@ -77,17 +78,15 @@ if __name__ == "__main__":
 
     # Subparser for the EOD command
     parser_eod_date = subparsers.add_parser("market_data", help="Retrieve EOD data for symbols.")
-    parser_eod_date.set_defaults(func=process_symbols('candidates'))
-
-    # Subparser for Command 2
-    #parser_financials = subparsers.add_parser("financials", help="Do things with market data from yahoo.")
-    #parser_financials.set_defaults(func=financials)
+    parser_eod_date.set_defaults(func=process_symbols)
 
     # Parse the command-line arguments
     args = parser.parse_args()
 
     # Execute the appropriate function based on the subcommand
     if hasattr(args, 'func'):
-        args.func()
+        market_data = args.func()
+        market_data.to_csv(file_ops.symbols_sys_output_path, index=False, sep='\t')
+        gits.push_file(file_ops.symbols_sys_output_path, "new market data for trading candidates")
     else:
         print("No command specified. Use -h or --help for usage information.")
