@@ -102,7 +102,7 @@ def schedule_tasks(trading_session):
     tasty_session = trading_session
 
     # Schedule task at 9:30 AM New York time
-    schedule.every().day.at('10:41', ny_timezone).do(task_09_30_ny)
+    schedule.every().day.at('09:30', ny_timezone).do(task_09_30_ny)
 
     # Schedule task at 10:00 PM New York time
     schedule.every().day.at('16:00', ny_timezone).do(task_16_00_ny)
