@@ -50,8 +50,11 @@ def task_09_30_ny():
         with open(file_ops.symbols_tbc, 'r') as file:
             tickers = [line.strip() for line in file]
 
-        for ticker in tickers:
-            print(ticker)
+        if not tickers:
+            for ticker in tickers:
+                logging.info("Close position {0}.".format(ticker))
+        else:
+            logging.info("There are no positions that have to be closed.")
 
     else:
         logging.info('Markets closed today.')
